@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <title>inventory-managemen</title>
+
+</head>
+
+<body>
+    <h1>在庫管理</h1>
+    <!-- 入力場所を作成しよう -->
+
+
+    <p id="date"></p>
+
+    <table>
+        <tr class="header">
+            <th class="item1"> </th>
+            <th class="item2">JAN</th>
+            <th class="item2">商品名</th>
+            <th class="item2">入荷個数</th>
+            <th class="item2">賞味期限</th>
+            <th class="item2">備考</th>
+        </tr>
+        <tr>
+            <td class="item1">1</td>
+
+            <td class="value1"><input type="text" id="jan">
+            </td>
+            <td class="value1"><input type="text" id="item">
+            </td>
+            <td class="value1"><input type="text" id="quantity">
+            </td>
+            <td class="value1"><input type="text" id="date">
+            </td>
+            <td class="value1"><input type="text" id="other">
+            </td>
+
+        </tr>
+
+
+    </table>
+
+
+
+    <div id=button_table>
+        <button id="select_button1">
+            <li id="save">Save</li>
+        </button>
+        <button id="select_button2">
+            <li id="clear">Clear</li>
+        </button>
+    </div>
+    <!-- <div id="kigen">
+        <p id="kigen_text">賞味期限近いよ！</p>
+    </div> -->
+
+
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+
+
+    </script>
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";
+
+        import {
+            getFirestore,
+            collection,
+            addDoc,
+            serverTimestamp,
+            onSnapshot,
+            query,
+            orderBy,
+        } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-firestore.js";
+
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAP8RFXUqxsub00bgLFVq3_fz-HQ3twzd0",
+            authDomain: "inventory-management-aa718.firebaseapp.com",
+            projectId: "inventory-management-aa718",
+            storageBucket: "inventory-management-aa718.appspot.com",
+            messagingSenderId: "126659204609",
+            appId: "1:126659204609:web:ed8700e7b5a0b28a3a5200"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        $("#save").on("click", function () {
+            const postData = {
+                name: $("#").val(),
+                text: $("#").val(),
+                time: serverTimestamp(),
+            };
+            addDoc(collection(db, "chat"), postData);
+            $("#text").val("");
+        });
+
+        const q = query(collection(db, "chat"), orderBy("time", "desc"));
+
+        onSnapshot(q, (querySnapshot) => {
+            //データの変更があったときにこの処理が動く
+            console.log(querySnapshot.docs);
+            //これは毎回同じ
+            const documents = [];
+            querySnapshot.docs.forEach(function (doc) {
+                const document = {
+                    id: doc.id,
+                    data: doc.data(),
+                };
+
+                documents.push(document);
+            });
+            //ただのオブジェクトが入った配列
+            console.log(documents);
+
+            const htmlElements = [];
+            documents.forEach(function (document) {
+                htmlElements.push(`
+    <li id="${document.id}">
+      <p>${document.data.name} at ${convertTimestampToDatetime(document.data.time.seconds)}</p>
+      <p>${document.data.text}</p>
+    </li>
+  `);
+            });
+
+            $("#output").html(htmlElements);
+        });
+    </script>
+
+</body>
+
+</html>
